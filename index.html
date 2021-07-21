@@ -87,8 +87,8 @@ function setupPage() {
 			} else {
 				unexpectedFiles += ' ' + fileInput.files[i].name;
 			}
-			document.getElementById('fileInput').value = '';
 		}
+		document.getElementById('fileInput').value = '';
 		var uploadMsg = 'Uploaded:';
 		for (var i = 0; i < numFiles; i++) {
 			uploadMsg += ' ' + expectedFiles[i];
