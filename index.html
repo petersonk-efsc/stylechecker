@@ -15,6 +15,23 @@
 	<script>
 /**************************************************************************/
 
+function changeLang() {
+	const urlParams = new URLSearchParams(window.location.search);
+	if (urlParams.has('files')) {
+	    alert('Cannot change language when specific files are expected');
+	} else {
+	    defLang = document.getElementById("lang").value;
+		defFile = 'fileDispName0';
+		if (defLang == "java") {
+		    document.getElementById(defFile).innerHTML = "YourCode.java";
+		} else if (defLang == "cs") {
+		    document.getElementById(defFile).innerHTML = "YourCode.cs";
+		} else {
+		    document.getElementById(defFile).innerHTML = "YourCode.cpp";
+		}
+	}
+}
+
 function readFile(file, fileSourceId, fileFnameId, fileDispNameId) {
 	const reader = new FileReader();
 	reader.addEventListener('load', function(e) {
@@ -29,12 +46,25 @@ function setupPage() {
 	const urlParams = new URLSearchParams(window.location.search);
 	var maxFiles = 0
 	var matchFiles = false
+
 	if (urlParams.has('files')) {
 		files = urlParams.get('files').split(',')
 		document.getElementById('fileNameList').innerHTML = 'Upload files: ' + files;
 		matchFiles = true;
+		document.getElementById("lang").disabled = true;
 	} else {
-		files = ["YourCode.cpp"];
+		if (urlParams.has('lang')) {
+			defLang = urlParams.get('lang');
+			if (defLang == "java") {
+				files = ["YourCode.java"];
+			} else if (defLang == "cs") {
+				files = ["YourCode.cs"];
+			} else {
+				files = ["YourCode.cpp"];
+			}
+		} else {
+			files = ["YourCode.cpp"];
+		}
 	}
 	if (files[0].endsWith(".java")) {
 		document.getElementById("lang").value = "java";
@@ -108,10 +138,10 @@ function setupPage() {
 			<p id='fileUploadResults'></p>
 			<input type="file" id="fileInput" name="fileInput" multiple>
 		</div>
-		<select id="lang" name="lang">
+		<select id="lang" name="lang" onchange="changeLang()">
 			<option value="cpp">C++</option>
-			<!--
 			<option value="java">Java</option>
+			<!--
 			<option value="cs">C#</option>
 			-->
 		</select>
