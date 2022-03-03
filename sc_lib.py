@@ -305,6 +305,8 @@ def tokenize_stmts(src_file):
                             src_file.lines[line_num].first_token = token_cnt + 1
                             line_len = len(line)
                     new_tok.tok_str = new_tok.tok_str.rstrip()
+                if new_tok.tok_str.lower() == 'tostring': ## KP-crazy Javascript/Brython issue
+                    new_tok.tok_str = new_tok.tok_str + 'JS'
                 src_file.tokens.append(new_tok)
                 token_cnt += 1
             elif line[col_num].isspace():
@@ -401,7 +403,7 @@ def find_next_token(tokens, tok_ind, find_char, match=False):
             count = 0
             start_char = tokens[tok_ind].tok_str
             end_char = match_char_dict[start_char]
-            while not done:
+            while tok_ind < len(tokens) and not done:
                 if tokens[tok_ind].tok_str == start_char:
                     count += 1
                 elif tokens[tok_ind].tok_str == end_char:
