@@ -1071,7 +1071,6 @@ def check_comments(src_file):
     end_com_line = src_file.tokens[0].line
     end_com_col = src_file.tokens[0].col
     comment = get_comment(src_file, 0, 0, end_com_line, end_com_col, False)
-    print('KP', comment)
     if len(comment) == 0:
         src_file.lines[0].issues.append((StyleSummary.ERROR_FILE_NO_COMMENT,
                                                  'Missing comment at top of file'))
