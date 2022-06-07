@@ -893,7 +893,7 @@ def check_spacing(src_file):
                         prev_after = tok.ind
                         src_file.lines[tok.line].issues.append((StyleSummary.ERROR_SPACING,
                                                                 'Missing space after ' + tok_str))
-        elif tok.tok_str.startswith('operator'):
+        elif tok.tok_str.startswith('operator') and src_file.lang != SrcFile.LANG_JAVA:
             if ' ' in tok.tok_str:
                src_file.lines[tok.line].issues.append((StyleSummary.ERROR_SPACING,
                                                        'No spaces before/after operator being overloaded ' + tok_str))
@@ -1040,7 +1040,7 @@ def check_token_use(src_file):
         ind += 1
 
 
-def get_comment(src_file, start_com_line, start_com_col, end_com_line, end_com_col):
+def get_comment(src_file, start_com_line, start_com_col, end_com_line, end_com_col, trim_it=True):
     """TBD."""
     comment = ''
     if start_com_line != end_com_line:
@@ -1055,7 +1055,7 @@ def get_comment(src_file, start_com_line, start_com_col, end_com_line, end_com_c
     comment = comment.strip()
     if comment.endswith('*/'):
         trim_to = comment.rfind('/*')
-        if trim_to != -1:
+        if trim_it and trim_to != -1:
             comment = comment[trim_to:]
     return comment
 
@@ -1065,12 +1065,13 @@ def check_comments(src_file):
     if len(src_file.tokens) == 0:
         return
     if src_file.lang == SrcFile.LANG_JAVA:
-        com_opening = re.compile(r'\/\*\*[ \n]*\* \S[\s\S]*\*[ \n]*\* \@author[ \t]+\S[\s\S]*\* \@version[ \t]+\S[\s\S]*\*\/')
+        com_opening = re.compile(r'\/\*\*[ \n]*\* \S[\s\S]*\*[ \n]*\* \@author[ \t]+\S[\s\S]*\* \@version[ \t]+\S[\s\S]*\*\/[\s\S]*')
     else:
-        com_opening = re.compile(r'\/\*[ \n]*\* \S[\s\S]*\*[ \n]*\* Name:[ \t]+\S[\s\S]*\* Date:[ \t]+\S[\s\S]*\*\/')
+        com_opening = re.compile(r'\/\*[ \n]*\* \S[\s\S]*\*[ \n]*\* Name:[ \t]+\S[\s\S]*\* Date:[ \t]+\S[\s\S]*\*\/[\s\S]*')
     end_com_line = src_file.tokens[0].line
     end_com_col = src_file.tokens[0].col
-    comment = get_comment(src_file, 0, 0, end_com_line, end_com_col)
+    comment = get_comment(src_file, 0, 0, end_com_line, end_com_col, False)
+    print('KP', comment)
     if len(comment) == 0:
         src_file.lines[0].issues.append((StyleSummary.ERROR_FILE_NO_COMMENT,
                                                  'Missing comment at top of file'))
